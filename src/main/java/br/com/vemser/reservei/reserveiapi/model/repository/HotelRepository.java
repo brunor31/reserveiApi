@@ -18,13 +18,15 @@ public class HotelRepository {
     @Autowired
     private QuartoRepository quartoRepository;
 
+    private Connection connection;
+
     public List<Hotel> getAll() throws BancoDeDadosException {
         List<Hotel> hoteis = new ArrayList<>();
         Connection con = null;
         ResultSet res;
         try {
-            con = ConexaoDB.getConnection();
-            Statement stmt = con.createStatement();
+
+            Statement stmt = connection.createStatement();
 
             String sql = "SELECT h.*, a.NUMERO " +
                     "       FROM HOTEL h " +
@@ -41,8 +43,8 @@ public class HotelRepository {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (con != null) {
-                    con.close();
+                if (connection != null) {
+                    connection.close();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -58,7 +60,8 @@ public class HotelRepository {
         hotel.setTelefone(res.getString("TELEFONE"));
         hotel.setClassificacao(res.getInt("CLASSIFICACAO"));
         hotel.setQuartos(quartoRepository.getAll().stream().
-                filter(quarto -> quarto.getHotel().equals(hotel)).toList());
+                filter(quarto -> quarto.getHotel().equals(hotel))
+                .toList());
         return hotel;
     }
 

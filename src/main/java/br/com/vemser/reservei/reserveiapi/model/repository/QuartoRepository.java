@@ -4,6 +4,7 @@ import br.com.vemser.reservei.reserveiapi.model.entitys.Hotel;
 import br.com.vemser.reservei.reserveiapi.model.entitys.Quarto;
 import br.com.vemser.reservei.reserveiapi.model.entitys.TipoQuarto;
 import br.com.vemser.reservei.reserveiapi.model.exceptions.BancoDeDadosException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -12,6 +13,9 @@ import java.util.List;
 
 @Repository
 public class QuartoRepository {
+
+    @Autowired
+    private Connection connection;
 
     public Integer getProximoId(Connection connection) throws SQLException {
         try {
@@ -30,18 +34,16 @@ public class QuartoRepository {
     }
 
     public Quarto post(Quarto quarto) throws BancoDeDadosException {
-        Connection con = null;
         try {
-            con = ConexaoDB.getConnection();
 
-            Integer proximoId = this.getProximoId(con);
+            Integer proximoId = this.getProximoId(connection);
             quarto.setIdQuarto(proximoId);
 
             String sql = "INSERT INTO QUARTO\n" +
                     "(ID_QUARTO, ID_HOTEL, NUMERO, TIPO, PRECO_DIARIA)\n" +
                     "VALUES(?, ?, ?, ?, ?)\n";
 
-            PreparedStatement stmt = con.prepareStatement(sql);
+            PreparedStatement stmt = connection.prepareStatement(sql);
 
             stmt.setInt(1, quarto.getIdQuarto());
             stmt.setObject(2, quarto.getHotel());
@@ -56,8 +58,8 @@ public class QuartoRepository {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (con != null) {
-                    con.close();
+                if (connection != null) {
+                    connection.close();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -67,11 +69,9 @@ public class QuartoRepository {
 
     public List<Quarto> getAll() throws BancoDeDadosException {
         List<Quarto> quartos = new ArrayList<>();
-        Connection con = null;
         ResultSet res;
         try {
-            con = ConexaoDB.getConnection();
-            Statement stmt = con.createStatement();
+            Statement stmt = connection.createStatement();
 
             String sql = "SELECT a.*, h.* " +
                     "       FROM QUARTO a " +
@@ -88,8 +88,8 @@ public class QuartoRepository {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (con != null) {
-                    con.close();
+                if (connection != null) {
+                    connection.close();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
