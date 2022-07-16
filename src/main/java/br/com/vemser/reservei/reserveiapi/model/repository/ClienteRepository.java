@@ -1,5 +1,6 @@
 package br.com.vemser.reservei.reserveiapi.model.repository;
 
+import br.com.vemser.reservei.reserveiapi.config.ConexaoDB;
 import br.com.vemser.reservei.reserveiapi.model.entitys.Cliente;
 import br.com.vemser.reservei.reserveiapi.model.exceptions.BancoDeDadosException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,8 @@ import java.util.List;
 public class ClienteRepository {
     
     @Autowired
-    private Connection connection;
+    private ConexaoDB conexaoDB;
+   
     //gerar Id
     public Integer getProximoId(Connection connection) throws SQLException {
         try {
@@ -31,7 +33,8 @@ public class ClienteRepository {
     }
     
     //criar cliente
-    public Cliente post(Cliente cliente) throws BancoDeDadosException {
+    public Cliente post(Cliente cliente) throws BancoDeDadosException, SQLException {
+        Connection connection = conexaoDB.getConnection();
         try {
             Integer proximoId = this.getProximoId(connection);
             cliente.setIdCliente(proximoId);
@@ -65,9 +68,10 @@ public class ClienteRepository {
     }
     
     //Listar todos os clientes
-    public List<Cliente> listar() throws BancoDeDadosException {
+    public List<Cliente> listar() throws BancoDeDadosException, SQLException {
         List<Cliente> clientes = new ArrayList<>();
         ResultSet res;
+        Connection connection = conexaoDB.getConnection();
         try {
             Statement stmt = connection.createStatement();
             
@@ -95,8 +99,9 @@ public class ClienteRepository {
     }
     
     //buscar cliente por id
-    public List<Cliente> buscarIdCliente(Integer id) throws BancoDeDadosException {
+    public List<Cliente> buscarIdCliente(Integer id) throws BancoDeDadosException, SQLException {
         List<Cliente> clientes = new ArrayList<>();
+        Connection connection = conexaoDB.getConnection();
         try {
             String sql = "SELECT c.*" +
                     "       FROM CLIENTE c " +
@@ -125,8 +130,9 @@ public class ClienteRepository {
     }
     
     //buscar cliente por CPF
-    public List<Cliente> buscarCpfCliente(String cpf) throws BancoDeDadosException {
+    public List<Cliente> buscarCpfCliente(String cpf) throws BancoDeDadosException, SQLException {
         List<Cliente> clientes = new ArrayList<>();
+        Connection connection = conexaoDB.getConnection();
         try {
             String sql = "SELECT c.*" +
                     "       FROM CLIENTE c " +
@@ -155,7 +161,8 @@ public class ClienteRepository {
     }
     
     //EDITAR
-    public Cliente editar(Integer id, Cliente cliente) throws BancoDeDadosException {
+    public Cliente editar(Integer id, Cliente cliente) throws BancoDeDadosException, SQLException {
+      Connection connection = conexaoDB.getConnection();
         try {
             StringBuilder sql = new StringBuilder();
             sql.append("UPDATE cliente SET");
@@ -218,7 +225,8 @@ public class ClienteRepository {
     }
     
     //remover cliente por id
-    public void remover(Integer id) throws BancoDeDadosException {
+    public void remover(Integer id) throws BancoDeDadosException, SQLException {
+       Connection connection = conexaoDB.getConnection();
         try {
             String sql = "DELETE FROM CLIENTE WHERE ID_CLIENTE = ?";
             
@@ -226,7 +234,7 @@ public class ClienteRepository {
             
             stmt.setInt(1, id);
             
-            stmt.executeUpdate();
+            stmt.executeQuery();
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getMessage());
         } finally {

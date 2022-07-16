@@ -28,5 +28,4 @@ public class ClienteCreateDTO {
     @Pattern(regexp = "^(?=.*[@!#$%^&*()/\\\\])[@!#$%^&*()/\\\\a-zA-Z0-9]{8,20}")
     @Schema(description = "Senha do cliente, deve contar no mínimo 8 digitos, letras, número e caracter especial", example = "12asdde*")
     private String senha;
-
 }

@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
+import java.sql.SQLException;
 
 
 @RestController
@@ -35,7 +36,7 @@ public class ClienteController {
             }
     )
     @PostMapping
-    public ResponseEntity<ClienteDTO>  post(@RequestBody @Valid ClienteCreateDTO clienteCreateDTO) throws BancoDeDadosException, RegraDeNegocioException {
+    public ResponseEntity<ClienteDTO>  post(@RequestBody @Valid ClienteCreateDTO clienteCreateDTO) throws BancoDeDadosException, SQLException {
         return new ResponseEntity(clienteService.post(clienteCreateDTO), HttpStatus.OK);
     }
     
@@ -48,7 +49,7 @@ public class ClienteController {
             }
     )
     @GetMapping
-    public ResponseEntity<ClienteDTO> listar() throws BancoDeDadosException, RegraDeNegocioException {
+    public ResponseEntity<ClienteDTO> listar() throws BancoDeDadosException, SQLException {
         return new ResponseEntity(clienteService.listar(), HttpStatus.OK);
     }
     
@@ -62,7 +63,7 @@ public class ClienteController {
             }
     )
     @GetMapping("/{idCliente}")
-    public ResponseEntity<ClienteDTO> pegarClienteId(@PathVariable("idCliente") Integer id) throws BancoDeDadosException, RegraDeNegocioException {
+    public ResponseEntity<ClienteDTO> pegarClienteId(@PathVariable("idCliente") Integer id) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
         return new ResponseEntity(clienteService.pegarClienteId(id), HttpStatus.OK) ;
     }
     
@@ -76,7 +77,7 @@ public class ClienteController {
             }
     )
     @GetMapping("/cpf")
-    public ResponseEntity<ClienteDTO> pegarClienteCpf(@RequestParam("cpf") String cpf) throws BancoDeDadosException, RegraDeNegocioException {
+    public ResponseEntity<ClienteDTO> pegarClienteCpf(@RequestParam("cpf") String cpf) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
         return new ResponseEntity(clienteService.pegarClienteCpf(cpf), HttpStatus.OK);
     }
     
@@ -90,7 +91,7 @@ public class ClienteController {
             }
     )
     @PutMapping("/{idCliente}")
-    public ResponseEntity<ClienteDTO> atualizar(@PathVariable("idCliente") Integer id,@RequestBody @Valid ClienteCreateDTO clienteCreateDTO) throws BancoDeDadosException, RegraDeNegocioException {
+    public ResponseEntity<ClienteDTO> atualizar(@PathVariable("idCliente") Integer id,@RequestBody @Valid ClienteCreateDTO clienteCreateDTO) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
         return new ResponseEntity(clienteService.atualizar(id, clienteCreateDTO), HttpStatus.OK) ;
     }
     
@@ -104,7 +105,7 @@ public class ClienteController {
             }
     )
     @DeleteMapping("/{idCliente}")
-    public void remover(@PathVariable("idCliente") Integer id) throws BancoDeDadosException, RegraDeNegocioException {
+    public void remover(@PathVariable("idCliente") Integer id) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
         clienteService.remover(id);
     }
 }
