@@ -12,7 +12,7 @@ public class QuartoCreateDTO {
 
     @NotNull
     @Schema(description = "Id do hotel que o quarto pertence", example = "Id: 1")
-    private HotelDTO hotel;
+    private SimpleHotelDTO hotel;
     @NotNull
     @Schema(description = "Número do quarto", example = "501")
     private Integer numero;

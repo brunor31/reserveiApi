@@ -1,9 +1,11 @@
 package br.com.vemser.reservei.reserveiapi.model.repository;
 
+import br.com.vemser.reservei.reserveiapi.model.dto.HotelDTO;
 import br.com.vemser.reservei.reserveiapi.model.entitys.Hotel;
 import br.com.vemser.reservei.reserveiapi.model.entitys.Quarto;
 import br.com.vemser.reservei.reserveiapi.model.entitys.TipoQuarto;
 import br.com.vemser.reservei.reserveiapi.model.exceptions.BancoDeDadosException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +18,9 @@ public class QuartoRepository {
 
     @Autowired
     private Connection connection;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public Integer getProximoId(Connection connection) throws SQLException {
         try {
@@ -73,7 +78,7 @@ public class QuartoRepository {
         try {
             Statement stmt = connection.createStatement();
 
-            String sql = "SELECT a.*, h.* " +
+            String sql = "SELECT a.*, h.ID_HOTEL, h.NOME, h.CIDADE " +
                     "       FROM QUARTO a " +
                     "       FULL JOIN HOTEL h ON h.ID_HOTEL = a.ID_HOTEL";
 
@@ -104,12 +109,9 @@ public class QuartoRepository {
         hotel.setIdHotel(res.getInt("ID_HOTEL"));
         hotel.setNome(res.getString("NOME"));
         hotel.setCidade(res.getString("CIDADE"));
-        hotel.setTelefone(res.getString("TELEFONE"));
-        hotel.setClassificacao(res.getInt("CLASSIFICACAO"));
         quarto.setHotel(hotel);
         quarto.setNumero(res.getInt("NUMERO"));
         quarto.setTipo(TipoQuarto.ofType(res.getInt("TIPO")));
         quarto.setPrecoDiaria(res.getDouble("PRECO_DIARIA"));
-        return quarto;
-    }
+        return quarto;    }
 }

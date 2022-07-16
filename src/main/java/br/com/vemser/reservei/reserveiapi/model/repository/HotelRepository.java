@@ -17,25 +17,23 @@ public class HotelRepository {
 
     @Autowired
     private QuartoRepository quartoRepository;
-
+    @Autowired
     private Connection connection;
 
     public List<Hotel> getAll() throws BancoDeDadosException {
         List<Hotel> hoteis = new ArrayList<>();
-        Connection con = null;
         ResultSet res;
         try {
 
             Statement stmt = connection.createStatement();
 
-            String sql = "SELECT h.*, a.NUMERO " +
-                    "       FROM HOTEL h " +
-                    " INNER JOIN QUARTO a ON (a.ID_HOTEL = h.ID_HOTEL) ";
+            String sql = "SELECT h.*" +
+                    "       FROM HOTEL h ";
 
             res = stmt.executeQuery(sql);
 
             while (res.next()) {
-                Hotel hotel = getQuartoFromResultSet(res);
+                Hotel hotel = getHotelFromResultSet(res);
                 hoteis.add(hotel);
             }
             return hoteis;
@@ -52,16 +50,13 @@ public class HotelRepository {
         }
     }
 
-    private Hotel getQuartoFromResultSet(ResultSet res) throws SQLException {
+    private Hotel getHotelFromResultSet(ResultSet res) throws SQLException {
         Hotel hotel = new Hotel();
         hotel.setIdHotel(res.getInt("ID_HOTEL"));
         hotel.setNome(res.getString("NOME"));
         hotel.setCidade(res.getString("CIDADE"));
         hotel.setTelefone(res.getString("TELEFONE"));
         hotel.setClassificacao(res.getInt("CLASSIFICACAO"));
-        hotel.setQuartos(quartoRepository.getAll().stream().
-                filter(quarto -> quarto.getHotel().equals(hotel))
-                .toList());
         return hotel;
     }
 
