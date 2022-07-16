@@ -1,8 +1,7 @@
 package br.com.vemser.reservei.reserveiapi.model.repository;
 
+import br.com.vemser.reservei.reserveiapi.config.ConexaoDB;
 import br.com.vemser.reservei.reserveiapi.model.entitys.Hotel;
-import br.com.vemser.reservei.reserveiapi.model.entitys.Quarto;
-import br.com.vemser.reservei.reserveiapi.model.entitys.TipoQuarto;
 import br.com.vemser.reservei.reserveiapi.model.exceptions.BancoDeDadosException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,38 +10,31 @@ import org.springframework.stereotype.Repository;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+
 
 @Repository
 public class HotelRepository {
 
     @Autowired
-    private Connection connection;
+    private ConexaoDB conexaoDB;
     @Autowired
     private ObjectMapper objectMapper;
-    public List<Hotel> getAll() throws BancoDeDadosException {
+    public List<Hotel> getAll() throws BancoDeDadosException, SQLException {
         List<Hotel> hoteis = new ArrayList<>();
         ResultSet res;
+        Connection connection = conexaoDB.getConnection();
         try {
 
             Statement stmt = connection.createStatement();
 
-            String sql = "SELECT h.ID_HOTEL " +
+            String sql = "SELECT * " +
                     "       FROM HOTEL h ";
 
             res = stmt.executeQuery(sql);
 
             while (res.next()) {
-                Hotel hotel = getIdHotelFromResultSet(res);
-                String sql2 = "SELECT h.*,a.* FROM HOTEL h INNER JOIN QUARTO a ON (h.ID_HOTEL = a.ID_HOTEL) WHERE h.ID_HOTEL = ? ";
-                PreparedStatement preparedStatement = connection.prepareStatement(sql2);
-                preparedStatement.setInt(1,hotel.getIdHotel());
-                ResultSet resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()){
-                    Hotel hotel1 = getHotelFromResultSet(resultSet);
-                    hoteis.add(hotel1);
-                }
+                Hotel hotel = getHotelFromResultSet(res);
+                hoteis.add(hotel);
             }
 
             return hoteis;
@@ -59,10 +51,141 @@ public class HotelRepository {
         }
     }
 
-    private Hotel getIdHotelFromResultSet(ResultSet res) throws SQLException {
-        Hotel hotel = new Hotel();
-        hotel.setIdHotel(res.getInt("ID_HOTEL"));
-        return hotel;
+    public Integer getProximoId(Connection connection) throws BancoDeDadosException {
+        try {
+            String sql = "SELECT SEQ_HOTEL.nextval mysequence from DUAL";
+            Statement stmt = connection.createStatement();
+            ResultSet res = stmt.executeQuery(sql);
+
+            if (res.next()) {
+                return res.getInt("mysequence");
+            }
+
+            return null;
+        } catch (SQLException e) {
+            throw new BancoDeDadosException(e.getMessage());
+        }
+    }
+
+    public Hotel adicionar(Hotel hotel) throws BancoDeDadosException,SQLException {
+        Connection connection = conexaoDB.getConnection();
+        try {
+            Integer proximoId = this.getProximoId(connection);
+            hotel.setIdHotel(proximoId);
+
+            String sql = "INSERT INTO HOTEL\n" +
+                    "(ID_HOTEL, NOME, CIDADE, TELEFONE, CLASSIFICACAO)\n" +
+                    "VALUES(?, ?, ?, ?, ?)\n";
+
+            PreparedStatement stmt = connection.prepareStatement(sql);
+
+            stmt.setInt(1, hotel.getIdHotel());
+            stmt.setString(2, hotel.getNome());
+            stmt.setString(3, hotel.getCidade());
+            stmt.setString(4, hotel.getTelefone());
+            stmt.setInt(5, hotel.getClassificacao());
+
+            int res = stmt.executeUpdate();
+            System.out.println("adicionarHotel.res=" + res);
+            return hotel;
+        } catch (SQLException e) {
+            throw new BancoDeDadosException(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public Hotel editar (Integer id, Hotel hotel) throws SQLException {
+        Connection connection = conexaoDB.getConnection();
+        try{
+            StringBuilder sql = new StringBuilder();
+            sql.append("UPDATE HOTEL SET");
+            hotel.toString();
+            if (hotel != null) {
+                if (hotel.getIdHotel() != null)
+                    sql.append(" id_hotel = ?,");
+            }
+            if (hotel.getNome() != null) {
+                sql.append(" nome = ?,");
+            }
+            if (hotel.getCidade() != null) {
+                sql.append(" cidade = ?,");
+            }
+            if (hotel.getTelefone() != null) {
+                sql.append(" telefone = ?,");
+            }
+            if (hotel.getClassificacao() != null) {
+                sql.append(" classificacao = ?,");
+            }
+            sql.deleteCharAt(sql.length() - 1);
+            sql.append(" WHERE id_hotel = ? ");
+
+            PreparedStatement stmt = connection.prepareStatement(sql.toString());
+
+            int index = 1;
+            if (hotel != null) {
+                if (hotel.getIdHotel() != null) {
+                    stmt.setInt(index++, hotel.getIdHotel());
+                }
+            }
+            if (hotel.getNome() != null) {
+                stmt.setString(index++, hotel.getNome());
+            }
+            if (hotel.getCidade() != null) {
+                stmt.setString(index++, hotel.getCidade());
+            }
+            if (hotel.getTelefone() != null) {
+                stmt.setString(index++, hotel.getTelefone());
+            }
+            if (hotel.getClassificacao() != null) {
+                stmt.setInt(index++, hotel.getClassificacao());
+            }
+            stmt.setInt(index++, id);
+
+            stmt.executeUpdate();
+
+            return hotel;
+        }catch (SQLException e){
+            throw new BancoDeDadosException(e.getMessage());
+        }finally {
+            try {
+                if (connection != null){
+                    connection.close();
+                }
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void remover(Integer id) throws BancoDeDadosException,SQLException {
+        Connection connection = conexaoDB.getConnection();
+        try {
+            String sql = "DELETE FROM HOTEL WHERE ID_HOTEL = ?";
+
+            PreparedStatement stmt = connection.prepareStatement(sql);
+
+            stmt.setInt(1, id);
+
+            stmt.executeQuery();
+
+        } catch (SQLException e) {
+            throw new BancoDeDadosException(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private Hotel getHotelFromResultSet(ResultSet res) throws SQLException {
@@ -72,14 +195,6 @@ public class HotelRepository {
         hotel.setCidade(res.getString("CIDADE"));
         hotel.setTelefone(res.getString("TELEFONE"));
         hotel.setClassificacao(res.getInt("CLASSIFICACAO"));
-        Quarto quarto = new Quarto();
-        List<Quarto> quartos = new ArrayList<>();
-        quarto.setIdQuarto(res.getInt("ID_QUARTO"));
-        quarto.setNumero(res.getInt("NUMERO"));
-        quarto.setTipo(TipoQuarto.ofType(res.getInt("TIPO")));
-        quarto.setPrecoDiaria(res.getDouble("PRECO_DIARIA"));
-        quartos.add(quarto);
-        hotel.setQuartos(quartos);
         return hotel;
     }
 }
