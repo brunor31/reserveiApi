@@ -21,10 +21,13 @@ public class QuartoService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public QuartoDTO post(QuartoCreateDTO quartoCreateDTO) throws BancoDeDadosException {
-        Quarto quarto = objectMapper.convertValue(quartoCreateDTO, Quarto.class);
-        quartoRepository.post(quarto);
-        return objectMapper.convertValue(quarto, QuartoDTO.class);
+//    public QuartoDTO post(QuartoCreateDTO quartoCreateDTO) throws BancoDeDadosException {
+//        Quarto quarto = objectMapper.convertValue(quartoCreateDTO, Quarto.class);
+//        quartoRepository.post(quarto);
+//        return objectMapper.convertValue(quarto, QuartoDTO.class);
+//    }
+    public void delete(Integer id) throws BancoDeDadosException {
+        quartoRepository.delete(id);
     }
     public List<QuartoDTO> getAll() throws BancoDeDadosException {
         return quartoRepository.getAll().stream()

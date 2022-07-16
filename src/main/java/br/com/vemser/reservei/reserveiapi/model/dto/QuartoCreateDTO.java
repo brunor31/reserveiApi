@@ -11,13 +11,13 @@ import javax.validation.constraints.NotNull;
 public class QuartoCreateDTO {
 
     @NotNull
-    @Schema(description = "Id do hotel que o quarto pertence", example = "Id: 1")
+    @Schema(description = "Id do hotel que o quarto pertence", example = "idHotel: 1")
     private SimpleHotelDTO hotel;
     @NotNull
     @Schema(description = "Número do quarto", example = "501")
     private Integer numero;
     @NotNull
-    @Schema(description = "Tipo do quarto [1 - Solteiro, 2 - Casal]", example = "Solteiro")
+    @Schema(description = "Tipo do quarto [1 - Solteiro, 2 - Casal]", example = "QUARTO_SOLTEIRO")
     private TipoQuarto tipo;
     @NotNull
     @Schema(description = "Valor da diária do quarto", example = "250.00")

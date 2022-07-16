@@ -38,32 +38,55 @@ public class QuartoRepository {
         }
     }
 
-    public Quarto post(Quarto quarto) throws BancoDeDadosException {
+//    public Quarto post(Quarto quarto) throws BancoDeDadosException {
+//        try {
+//
+//            Integer proximoId = this.getProximoId(connection);
+//            quarto.setIdQuarto(proximoId);
+//
+//            String sql = "INSERT INTO QUARTO\n" +
+//                    "(ID_QUARTO, ID_HOTEL, NUMERO, TIPO, PRECO_DIARIA)\n" +
+//                    "VALUES(?, ?, ?, ?, ?)\n";
+//
+//            PreparedStatement stmt = connection.prepareStatement(sql);
+//
+//            stmt.setInt(1, quarto.getIdQuarto());
+//            stmt.setInt(2, quarto.getHotel().getIdHotel());
+//            stmt.setInt(3, quarto.getNumero());
+//            stmt.setInt(4, quarto.getTipo().getTipo());
+//            stmt.setDouble(5, quarto.getPrecoDiaria());
+//
+//            stmt.executeUpdate();
+//            return quarto;
+//
+//        } catch (SQLException e) {
+//            throw new BancoDeDadosException(e.getMessage());
+//        } finally {
+//            try {
+//                if (!connection.isClosed()) {
+//                    connection.close();
+//                }
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+    public void delete(Integer id) throws BancoDeDadosException {
         try {
 
-            Integer proximoId = this.getProximoId(connection);
-            quarto.setIdQuarto(proximoId);
-
-            String sql = "INSERT INTO QUARTO\n" +
-                    "(ID_QUARTO, ID_HOTEL, NUMERO, TIPO, PRECO_DIARIA)\n" +
-                    "VALUES(?, ?, ?, ?, ?)\n";
+            String sql = "DELETE FROM QUARTO WHERE ID_QUARTO = ?";
 
             PreparedStatement stmt = connection.prepareStatement(sql);
 
-            stmt.setInt(1, quarto.getIdQuarto());
-            stmt.setObject(2, quarto.getHotel());
-            stmt.setInt(3, quarto.getNumero());
-            stmt.setInt(4, quarto.getTipo().getTipo());
-            stmt.setDouble(5, quarto.getPrecoDiaria());
+            stmt.setInt(1, id);
 
             stmt.executeUpdate();
-            return quarto;
 
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (connection != null) {
+                if (!connection.isClosed()) {
                     connection.close();
                 }
             } catch (SQLException e) {
@@ -71,7 +94,6 @@ public class QuartoRepository {
             }
         }
     }
-
     public List<Quarto> getAll() throws BancoDeDadosException {
         List<Quarto> quartos = new ArrayList<>();
         ResultSet res;
@@ -93,7 +115,7 @@ public class QuartoRepository {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (connection != null) {
+                if (!connection.isClosed()) {
                     connection.close();
                 }
             } catch (SQLException e) {
