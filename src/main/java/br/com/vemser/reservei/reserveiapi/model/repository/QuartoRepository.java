@@ -38,39 +38,39 @@ public class QuartoRepository {
         }
     }
 
-//    public Quarto post(Quarto quarto) throws BancoDeDadosException {
-//        try {
-//
-//            Integer proximoId = this.getProximoId(connection);
-//            quarto.setIdQuarto(proximoId);
-//
-//            String sql = "INSERT INTO QUARTO\n" +
-//                    "(ID_QUARTO, ID_HOTEL, NUMERO, TIPO, PRECO_DIARIA)\n" +
-//                    "VALUES(?, ?, ?, ?, ?)\n";
-//
-//            PreparedStatement stmt = connection.prepareStatement(sql);
-//
-//            stmt.setInt(1, quarto.getIdQuarto());
-//            stmt.setInt(2, quarto.getHotel().getIdHotel());
-//            stmt.setInt(3, quarto.getNumero());
-//            stmt.setInt(4, quarto.getTipo().getTipo());
-//            stmt.setDouble(5, quarto.getPrecoDiaria());
-//
-//            stmt.executeUpdate();
-//            return quarto;
-//
-//        } catch (SQLException e) {
-//            throw new BancoDeDadosException(e.getMessage());
-//        } finally {
-//            try {
-//                if (!connection.isClosed()) {
-//                    connection.close();
-//                }
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    public Quarto post(Quarto quarto) throws BancoDeDadosException {
+        try {
+
+            Integer proximoId = this.getProximoId(connection);
+            quarto.setIdQuarto(proximoId);
+
+            String sql = "INSERT INTO QUARTO\n" +
+                    "(ID_QUARTO, ID_HOTEL, NUMERO, TIPO, PRECO_DIARIA)\n" +
+                    "VALUES(?, ?, ?, ?, ?)\n";
+
+            PreparedStatement stmt = connection.prepareStatement(sql);
+
+            stmt.setInt(1, quarto.getIdQuarto());
+            stmt.setInt(2, quarto.getHotel().getIdHotel());
+            stmt.setInt(3, quarto.getNumero());
+            stmt.setInt(4, quarto.getTipo().getTipo());
+            stmt.setDouble(5, quarto.getPrecoDiaria());
+
+            stmt.executeUpdate();
+            return quarto;
+
+        } catch (SQLException e) {
+            throw new BancoDeDadosException(e.getMessage());
+        } finally {
+            try {
+                if (!connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     public void delete(Integer id) throws BancoDeDadosException {
         try {
 

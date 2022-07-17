@@ -27,10 +27,10 @@ public class QuartoController {
         return quartoService.getAll();
     }
 
-//    @PostMapping
-//    public QuartoDTO post(@RequestBody QuartoCreateDTO quartoCreateDTO) throws BancoDeDadosException {
-//        return quartoService.post(quartoCreateDTO);
-//    }
+    @PostMapping
+    public QuartoDTO post(@RequestBody QuartoCreateDTO quartoCreateDTO) throws BancoDeDadosException {
+        return quartoService.post(quartoCreateDTO);
+    }
 
     @DeleteMapping("/{idQuarto}")
     public void delete(@PathVariable("idQuarto") Integer id) throws BancoDeDadosException {
