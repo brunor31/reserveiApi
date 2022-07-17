@@ -8,9 +8,9 @@ import java.time.LocalDate;
 public class Reserva {
 
     private Integer idReserva;
-    private Hotel hotel;
-    private Quarto quarto;
-    private Cliente cliente;
+    private Integer idHotel;
+    private Integer idQuarto;
+    private Integer idCliente;
     private LocalDate dataEntrada;
     private LocalDate dataSaida;
     private TipoReserva tipo;

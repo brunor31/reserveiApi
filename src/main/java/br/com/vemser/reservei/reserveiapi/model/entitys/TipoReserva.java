@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public enum TipoReserva {
 
-    RESERVA_COMUM(1), RESERVA_PREMIUM(2);
+    RESERVA_COMUM(0), RESERVA_PREMIUM(1);
 
     private Integer tipo;
 

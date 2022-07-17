@@ -2,8 +2,9 @@ package br.com.vemser.reservei.reserveiapi.model.service;
 
 import br.com.vemser.reservei.reserveiapi.model.dto.QuartoCreateDTO;
 import br.com.vemser.reservei.reserveiapi.model.dto.QuartoDTO;
+import br.com.vemser.reservei.reserveiapi.model.entitys.Hotel;
 import br.com.vemser.reservei.reserveiapi.model.entitys.Quarto;
-import br.com.vemser.reservei.reserveiapi.model.exceptions.BancoDeDadosException;
+import br.com.vemser.reservei.reserveiapi.model.repository.HotelRepository;
 import br.com.vemser.reservei.reserveiapi.model.repository.QuartoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,9 @@ public class QuartoService {
 
     @Autowired
     private QuartoRepository quartoRepository;
+
     @Autowired
-    private HotelService hotelService;
+    private HotelRepository hotelRepository;
     @Autowired
     private ObjectMapper objectMapper;
 

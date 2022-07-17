@@ -1,9 +1,7 @@
 package br.com.vemser.reservei.reserveiapi.model.repository;
 
 import br.com.vemser.reservei.reserveiapi.config.ConexaoDB;
-import br.com.vemser.reservei.reserveiapi.model.entitys.Cliente;
-import br.com.vemser.reservei.reserveiapi.model.entitys.Hotel;
-import br.com.vemser.reservei.reserveiapi.model.entitys.Quarto;
+import br.com.vemser.reservei.reserveiapi.model.entitys.*;
 import br.com.vemser.reservei.reserveiapi.model.exceptions.BancoDeDadosException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,56 +11,35 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Repository
-public class HotelRepository {
+public class ReservaRepository {
 
     @Autowired
     private ConexaoDB conexaoDB;
     @Autowired
     private ObjectMapper objectMapper;
 
-    public List<Hotel> getAll() throws BancoDeDadosException, SQLException {
-        List<Hotel> hoteis = new ArrayList<>();
+    public List<Reserva> getAll() throws SQLException {
+        List<Reserva> reservas = new ArrayList<>();
         ResultSet res;
-        ResultSet res1;
         Connection connection = conexaoDB.getConnection();
         try {
 
             Statement stmt = connection.createStatement();
 
-            String sql = "SELECT * " +
-                    "       FROM HOTEL h ";
+            String sql = "SELECT r.* " +
+                    "       FROM Reserva r ";
 
             res = stmt.executeQuery(sql);
 
             Statement st = connection.createStatement();
 
             while (res.next()) {
-
-                Hotel hotel = getHotelFromResultSet(res);
-
-                String select = " SELECT a.NUMERO " +
-                        "           FROM QUARTO a " +
-                        "          INNER JOIN HOTEL h ON (a.ID_HOTEL = h.ID_HOTEL) " +
-                        "          WHERE a.ID_HOTEL = " + hotel.getIdHotel();
-
-                res1 = st.executeQuery(select);
-
-                List<Integer> numeroQuartos = new ArrayList<>();
-
-                while (res1.next()) {
-                    Quarto quarto = getQuartosFromResultSet(res1);
-                    Integer numero = quarto.getNumero();
-                    numeroQuartos.add(numero);
-                }
-
-                hotel.setQuartos(numeroQuartos);
-
-                hoteis.add(hotel);
+                Reserva reserva = getReservaFromResultSet(res);
+                reservas.add(reserva);
             }
 
-            return hoteis;
+            return reservas;
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
@@ -78,7 +55,7 @@ public class HotelRepository {
 
     public Integer getProximoId(Connection connection) throws BancoDeDadosException {
         try {
-            String sql = "SELECT SEQ_HOTEL.nextval mysequence from DUAL";
+            String sql = "SELECT SEQ_RESERVA.nextval mysequence from DUAL";
             Statement stmt = connection.createStatement();
             ResultSet res = stmt.executeQuery(sql);
 
@@ -92,27 +69,30 @@ public class HotelRepository {
         }
     }
 
-    public Hotel adicionar(Hotel hotel) throws BancoDeDadosException, SQLException {
+    public Reserva post(Reserva reserva) throws BancoDeDadosException, SQLException {
         Connection connection = conexaoDB.getConnection();
         try {
             Integer proximoId = this.getProximoId(connection);
-            hotel.setIdHotel(proximoId);
+            reserva.setIdReserva(proximoId);
 
-            String sql = "INSERT INTO HOTEL\n " +
-                    "(ID_HOTEL, NOME, CIDADE, TELEFONE, CLASSIFICACAO)\n" +
-                    "VALUES(?, ?, ?, ?, ?)\n";
+            String sql = "INSERT INTO RESERVA\n " +
+                    "(ID_RESERVA, ID_HOTEL, ID_QUARTO, ID_CLIENTE, DATA_ENTRADA, DATA_SAIDA, TIPO, VALOR_RESERVA)\n" +
+                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?)\n";
 
             PreparedStatement stmt = connection.prepareStatement(sql);
 
-            stmt.setInt(1, hotel.getIdHotel());
-            stmt.setString(2, hotel.getNome());
-            stmt.setString(3, hotel.getCidade());
-            stmt.setString(4, hotel.getTelefone());
-            stmt.setInt(5, hotel.getClassificacao());
+            stmt.setInt(1, reserva.getIdReserva());
+            stmt.setInt(2, reserva.getIdHotel());
+            stmt.setInt(3, reserva.getIdQuarto());
+            stmt.setInt(4, reserva.getIdCliente());
+            stmt.setDate(5, Date.valueOf(reserva.getDataEntrada()));
+            stmt.setDate(6, Date.valueOf(reserva.getDataSaida()));
+            stmt.setInt(7, reserva.getTipo().getTipo());
+            stmt.setDouble(8, reserva.getValorReserva());
 
-            stmt.executeUpdate();
-            return hotel;
+            int res = stmt.executeUpdate();
 
+            return reserva;
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
@@ -213,19 +193,16 @@ public class HotelRepository {
         }
     }
 
-    private Hotel getHotelFromResultSet(ResultSet res) throws SQLException {
-        Hotel hotel = new Hotel();
-        hotel.setIdHotel(res.getInt("ID_HOTEL"));
-        hotel.setNome(res.getString("NOME"));
-        hotel.setCidade(res.getString("CIDADE"));
-        hotel.setTelefone(res.getString("TELEFONE"));
-        hotel.setClassificacao(res.getInt("CLASSIFICACAO"));
-        return hotel;
-    }
-
-    private Quarto getQuartosFromResultSet(ResultSet res) throws SQLException {
-        Quarto quarto = new Quarto();
-        quarto.setNumero(res.getInt("NUMERO"));
-        return quarto;
+    private Reserva getReservaFromResultSet(ResultSet res) throws SQLException {
+        Reserva reserva = new Reserva();
+        reserva.setIdReserva(res.getInt("ID_RESERVA"));
+        reserva.setIdHotel(res.getInt("ID_HOTEL"));
+        reserva.setIdQuarto(res.getInt("ID_QUARTO"));
+        reserva.setIdCliente(res.getInt("ID_CLIENTE"));
+        reserva.setDataEntrada(res.getDate("DATA_ENTRADA").toLocalDate());
+        reserva.setDataSaida(res.getDate("DATA_SAIDA").toLocalDate());
+        reserva.setTipo(TipoReserva.ofTipo(res.getInt("TIPO")));
+        reserva.setValorReserva(res.getDouble("VALOR_RESERVA"));
+        return reserva;
     }
 }

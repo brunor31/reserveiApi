@@ -97,8 +97,8 @@ public class ClienteRepository {
         }
     }
 
-    public List<Cliente> getById(Integer id) throws SQLException {
-        List<Cliente> clientes = new ArrayList<>();
+    public Cliente getById(Integer id) throws SQLException {
+        Cliente cliente = null;
         Connection connection = conexaoDB.getConnection();
         ResultSet res;
         try {
@@ -112,10 +112,8 @@ public class ClienteRepository {
             stmt.setInt(1, id);
 
             res = stmt.executeQuery();
-
-            while (res.next()) {
-                Cliente cliente = getClienteFromResultSet(res);
-                clientes.add(cliente);
+            if (res.next()){
+                cliente = getClienteFromResultSet(res);
             }
 
             return cliente;
@@ -134,7 +132,9 @@ public class ClienteRepository {
     }
 
     public Cliente getByCpf(String cpf) throws SQLException {
+        Cliente cliente = null;
         Connection connection = conexaoDB.getConnection();
+        ResultSet res;
         try {
 
             String sql = "SELECT c.* " +
@@ -145,9 +145,11 @@ public class ClienteRepository {
 
             stmt.setString(1, cpf);
 
-            ResultSet res = stmt.executeQuery();
+            res = stmt.executeQuery();
 
-            Cliente cliente = getClienteFromResultSet(res);
+            if(res.next()){
+                cliente = getClienteFromResultSet(res);
+            }
 
             return cliente;
 

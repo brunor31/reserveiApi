@@ -1,11 +1,9 @@
 package br.com.vemser.reservei.reserveiapi.model.repository;
 
 import br.com.vemser.reservei.reserveiapi.config.ConexaoDB;
-import br.com.vemser.reservei.reserveiapi.model.entitys.Hotel;
 import br.com.vemser.reservei.reserveiapi.model.entitys.Quarto;
 import br.com.vemser.reservei.reserveiapi.model.entitys.TipoQuarto;
 import br.com.vemser.reservei.reserveiapi.model.exceptions.BancoDeDadosException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -18,9 +16,6 @@ public class QuartoRepository {
 
     @Autowired
     private ConexaoDB conexaoDB;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     public Integer getProximoId(Connection connection) throws SQLException {
         try {
@@ -37,22 +32,20 @@ public class QuartoRepository {
             throw new BancoDeDadosException(e.getMessage());
         }
     }
-
     public Quarto post(Quarto quarto) throws SQLException {
         Connection connection = conexaoDB.getConnection();
         try {
-
             Integer proximoId = this.getProximoId(connection);
-            quarto.setIdQuarto(proximoId);
+            quarto.setIdHotel(proximoId);
 
-            String sql = "INSERT INTO QUARTO\n" +
+            String sql = "INSERT INTO QUARTO\n " +
                     "(ID_QUARTO, ID_HOTEL, NUMERO, TIPO, PRECO_DIARIA)\n" +
                     "VALUES(?, ?, ?, ?, ?)\n";
 
             PreparedStatement stmt = connection.prepareStatement(sql);
 
             stmt.setInt(1, quarto.getIdQuarto());
-            stmt.setInt(2, quarto.getHotel().getIdHotel());
+            stmt.setInt(2, quarto.getIdHotel());
             stmt.setInt(3, quarto.getNumero());
             stmt.setInt(4, quarto.getTipo().getTipo());
             stmt.setDouble(5, quarto.getPrecoDiaria());
@@ -64,7 +57,7 @@ public class QuartoRepository {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (!connection.isClosed()) {
+                if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
@@ -72,11 +65,13 @@ public class QuartoRepository {
             }
         }
     }
+
     public void delete(Integer id) throws SQLException {
         Connection connection = conexaoDB.getConnection();
         try {
 
-            String sql = "DELETE FROM QUARTO WHERE ID_QUARTO = ?";
+            String sql = "DELETE FROM QUARTO " +
+                    "      WHERE ID_QUARTO = ?";
 
             PreparedStatement stmt = connection.prepareStatement(sql);
 
@@ -96,6 +91,7 @@ public class QuartoRepository {
             }
         }
     }
+
     public List<Quarto> getAll() throws SQLException {
         Connection connection = conexaoDB.getConnection();
         List<Quarto> quartos = new ArrayList<>();
@@ -103,7 +99,7 @@ public class QuartoRepository {
         try {
             Statement stmt = connection.createStatement();
 
-            String sql = "SELECT a.*, h.ID_HOTEL, h.NOME, h.CIDADE " +
+            String sql = "SELECT a.*, h.ID_HOTEL" +
                     "       FROM QUARTO a " +
                     "       FULL JOIN HOTEL h ON h.ID_HOTEL = a.ID_HOTEL";
 
@@ -127,16 +123,47 @@ public class QuartoRepository {
         }
     }
 
+    public Quarto getById(Integer id) throws SQLException {
+        Quarto quarto = null;
+        Connection connection = conexaoDB.getConnection();
+        ResultSet res;
+        try {
+
+            String sql = "SELECT * " +
+                    "       FROM QUARTO q" +
+                    "      WHERE q.ID_QUARTO = ?";
+
+            PreparedStatement stmt = connection.prepareStatement(sql);
+
+            stmt.setInt(1, id);
+
+            res = stmt.executeQuery();
+            if (res.next()) {
+                quarto = getQuartoFromResultSet(res);
+            }
+
+            return quarto;
+
+        } catch (SQLException e) {
+            throw new BancoDeDadosException("Quarto não encontrado");
+        } finally {
+            try {
+                if (!connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private Quarto getQuartoFromResultSet(ResultSet res) throws SQLException {
         Quarto quarto = new Quarto();
         quarto.setIdQuarto(res.getInt("ID_QUARTO"));
-        Hotel hotel = new Hotel();
-        hotel.setIdHotel(res.getInt("ID_HOTEL"));
-        hotel.setNome(res.getString("NOME"));
-        hotel.setCidade(res.getString("CIDADE"));
-        quarto.setHotel(hotel);
+        quarto.setIdHotel(res.getInt("ID_HOTEL"));
         quarto.setNumero(res.getInt("NUMERO"));
         quarto.setTipo(TipoQuarto.ofType(res.getInt("TIPO")));
         quarto.setPrecoDiaria(res.getDouble("PRECO_DIARIA"));
-        return quarto;    }
+        return quarto;
+    }
 }

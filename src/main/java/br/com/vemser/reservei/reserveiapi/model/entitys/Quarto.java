@@ -6,7 +6,7 @@ import lombok.Data;
 public class Quarto {
 
     private Integer idQuarto;
-    private Hotel hotel;
+    private Integer idHotel;
     private Integer numero;
     private TipoQuarto tipo;
     private Double precoDiaria;

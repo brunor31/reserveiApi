@@ -34,9 +34,9 @@ public class ClienteService {
                 .toList();
     }
     
-//    public ClienteDTO getById(Integer idCliente) throws SQLException {
-//        return objectMapper.convertValue(clienteRepository.getById(idCliente), ClienteDTO.class);
-//    }
+    public ClienteDTO getById(Integer idCliente) throws SQLException {
+        return objectMapper.convertValue(clienteRepository.getById(idCliente), ClienteDTO.class);
+    }
     
     public ClienteDTO getByCpf(String cpf) throws SQLException {
         return objectMapper.convertValue(clienteRepository.getByCpf(cpf), ClienteDTO.class);
@@ -47,7 +47,7 @@ public class ClienteService {
         clienteRepository.put(id, cliente);
         return objectMapper.convertValue(cliente, ClienteDTO.class);
     }
-    
+
     public void delete(Integer id) throws SQLException {
         clienteRepository.getById(id);
         clienteRepository.delete(id);

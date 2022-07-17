@@ -2,7 +2,6 @@ package br.com.vemser.reservei.reserveiapi.controller;
 
 import br.com.vemser.reservei.reserveiapi.model.dto.QuartoCreateDTO;
 import br.com.vemser.reservei.reserveiapi.model.dto.QuartoDTO;
-import br.com.vemser.reservei.reserveiapi.model.exceptions.BancoDeDadosException;
 import br.com.vemser.reservei.reserveiapi.model.exceptions.RegraDeNegocioException;
 import br.com.vemser.reservei.reserveiapi.model.service.QuartoService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class QuartoController {
     }
 
     @PostMapping
-    public QuartoDTO post(@RequestBody QuartoCreateDTO quartoCreateDTO) throws SQLException {
+    public QuartoDTO post(@RequestBody @Valid QuartoCreateDTO quartoCreateDTO) throws SQLException {
         return quartoService.post(quartoCreateDTO);
     }
 

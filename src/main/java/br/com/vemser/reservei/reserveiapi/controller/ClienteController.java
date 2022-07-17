@@ -34,11 +34,11 @@ public class ClienteController {
     public ResponseEntity<ClienteDTO> getAll() throws SQLException {
         return new ResponseEntity(clienteService.getAll(), HttpStatus.OK);
     }
-//    @GetMapping("/{idCliente}")
-//    public ResponseEntity<ClienteDTO> getById(@PathVariable("idCliente") Integer idCliente) throws SQLException {
-//        return new ResponseEntity(clienteService.getById(idCliente), HttpStatus.OK);
-//    }
-    @GetMapping("/{cpf}")
+    @GetMapping("/{idCliente}")
+    public ResponseEntity<ClienteDTO> getById(@PathVariable("idCliente") Integer idCliente) throws SQLException {
+        return new ResponseEntity(clienteService.getById(idCliente), HttpStatus.OK);
+    }
+    @GetMapping("/{cpf}/cpf")
     public ResponseEntity<ClienteDTO> getByCpf(@PathVariable("cpf") String cpf) throws SQLException {
         return new ResponseEntity(clienteService.getByCpf(cpf), HttpStatus.OK);
     }
