@@ -21,8 +21,10 @@ public class HotelService {
     private ObjectMapper objectMapper;
 
     //TODO: ARRUMAR O TIPO DE RETORNO
-    public List<Hotel> getAll() throws BancoDeDadosException, SQLException {
-        return hotelRepository.getAll();
+    public List<HotelDTO> getAll() throws SQLException {
+        return hotelRepository.getAll().stream()
+                .map(hotel -> objectMapper.convertValue(hotel, HotelDTO.class))
+                .toList();
     }
 
     public HotelDTO adicionar(HotelCreateDTO hotel) throws BancoDeDadosException {
