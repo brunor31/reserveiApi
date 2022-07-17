@@ -3,7 +3,6 @@ package br.com.vemser.reservei.reserveiapi.model.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.hibernate.validator.constraints.br.CPF;
-
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -29,5 +28,4 @@ public class ClienteCreateDTO {
     @Pattern(regexp = "^(?=.*[@!#$%^&*()/\\\\])[@!#$%^&*()/\\\\a-zA-Z0-9]{8,20}")
     @Schema(description = "Senha do cliente, deve contar no mínimo 8 digitos, letras, número e caracter especial", example = "12asdde*")
     private String senha;
-
 }
