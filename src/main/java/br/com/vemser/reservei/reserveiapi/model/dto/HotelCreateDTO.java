@@ -26,7 +26,5 @@ public class HotelCreateDTO {
     @Max(5)
     @Schema(description = "Classificação do hotel em estrelas, de 1 a 5", example = "5")
     private Integer classificacao;
-    @Schema(description = "Lista de quarto do hotel (Número dos quartos)", example = "201, 305, 402")
-    private List<QuartoDTO> quartos;
-
+    private List<Integer> quartos;
 }
