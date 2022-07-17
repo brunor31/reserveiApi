@@ -22,54 +22,35 @@ public class ClienteService {
     @Autowired
     private ObjectMapper objectMapper;
     
-    public ClienteDTO post(ClienteCreateDTO clienteCreateDTO) throws BancoDeDadosException, SQLException {
+    public ClienteDTO post(ClienteCreateDTO clienteCreateDTO) throws SQLException {
         Cliente cliente = objectMapper.convertValue(clienteCreateDTO, Cliente.class);
         clienteRepository.post(cliente);
         return objectMapper.convertValue(cliente, ClienteDTO.class);
     }
     
-    public List<ClienteDTO> listar() throws BancoDeDadosException, SQLException {
-        return clienteRepository.listar().stream().map(cliente -> objectMapper.convertValue(cliente, ClienteDTO.class))
-                .collect(Collectors.toList());
+    public List<ClienteDTO> getAll() throws SQLException {
+        return clienteRepository.getAll().stream()
+                .map(cliente -> objectMapper.convertValue(cliente, ClienteDTO.class))
+                .toList();
     }
     
-    public ClienteDTO pegarClienteId(Integer id) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
-        Cliente cliente = buscarIdCliente(id);
-        return objectMapper.convertValue(cliente, ClienteDTO.class);
-    }
+//    public ClienteDTO getById(Integer idCliente) throws SQLException {
+//        return objectMapper.convertValue(clienteRepository.getById(idCliente), ClienteDTO.class);
+//    }
     
-    public ClienteDTO pegarClienteCpf(String cpf) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
-        Cliente cliente = buscarCpfCliente(cpf);
-        return objectMapper.convertValue(cliente, ClienteDTO.class);
+    public ClienteDTO getByCpf(String cpf) throws SQLException {
+        return objectMapper.convertValue(clienteRepository.getByCpf(cpf), ClienteDTO.class);
     }
-    
-    public ClienteDTO atualizar(Integer id, ClienteCreateDTO clienteCreateDTO) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
+    public ClienteDTO put(Integer id, ClienteCreateDTO clienteCreateDTO) throws SQLException {
+        clienteRepository.getById(id);
         Cliente cliente = objectMapper.convertValue(clienteCreateDTO, Cliente.class);
-        buscarIdCliente(id);
-        clienteRepository.editar(id, cliente);
+        clienteRepository.put(id, cliente);
         return objectMapper.convertValue(cliente, ClienteDTO.class);
     }
     
-    public void remover(Integer id) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
-        buscarIdCliente(id);
-        clienteRepository.remover(id);
-    }
-    
-    public Cliente buscarIdCliente( Integer id) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
-        Cliente cliente = clienteRepository.buscarIdCliente(id)
-                .stream()
-                .findFirst()
-                .orElseThrow(()-> new RegraDeNegocioException("id nao encontrado"));
-        return cliente;
-    }
-    
-    public Cliente buscarCpfCliente(String cpf) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
-        Cliente cliente = clienteRepository.buscarCpfCliente(cpf)
-                .stream()
-                .filter(cliente1 -> cliente1.getCpf().contains(cpf))
-                .findFirst()
-                .orElseThrow(()-> new RegraDeNegocioException("cpf nao encontrado"));
-        return cliente;
+    public void delete(Integer id) throws SQLException {
+        clienteRepository.getById(id);
+        clienteRepository.delete(id);
     }
 }
     

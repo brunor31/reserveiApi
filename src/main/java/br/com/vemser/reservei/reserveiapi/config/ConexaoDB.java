@@ -1,9 +1,7 @@
 package br.com.vemser.reservei.reserveiapi.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.RequestScope;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

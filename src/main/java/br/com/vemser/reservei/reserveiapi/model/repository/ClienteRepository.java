@@ -12,17 +12,17 @@ import java.util.List;
 
 @Repository
 public class ClienteRepository {
-    
+
     @Autowired
     private ConexaoDB conexaoDB;
-   
+
     //gerar Id
     public Integer getProximoId(Connection connection) throws SQLException {
         try {
             String sql = "SELECT SEQ_CLIENTE.nextval mysequence from DUAL";
             Statement stmt = connection.createStatement();
             ResultSet res = stmt.executeQuery(sql);
-            
+
             if (res.next()) {
                 return res.getInt("mysequence");
             }
@@ -31,27 +31,27 @@ public class ClienteRepository {
             throw new BancoDeDadosException(e.getMessage());
         }
     }
-    
+
     //criar cliente
     public Cliente post(Cliente cliente) throws BancoDeDadosException, SQLException {
         Connection connection = conexaoDB.getConnection();
         try {
             Integer proximoId = this.getProximoId(connection);
             cliente.setIdCliente(proximoId);
-            
+
             String sql = "INSERT INTO CLIENTE" +
                     "(ID_CLIENTE, NOME, CPF, TELEFONE, EMAIL, SENHA)" +
                     "VALUES(?, ?, ?, ?, ?, ?)";
-            
+
             PreparedStatement stmt = connection.prepareStatement(sql);
-            
+
             stmt.setInt(1, cliente.getIdCliente());
             stmt.setString(2, cliente.getNome());
             stmt.setString(3, cliente.getCpf());
             stmt.setString(4, cliente.getTelefone());
             stmt.setString(5, cliente.getEmail());
             stmt.setString(6, cliente.getSenha());
-            
+
             stmt.executeUpdate();
             return cliente;
         } catch (SQLException e) {
@@ -66,20 +66,19 @@ public class ClienteRepository {
             }
         }
     }
-    
-    //Listar todos os clientes
-    public List<Cliente> listar() throws BancoDeDadosException, SQLException {
+
+    public List<Cliente> getAll() throws SQLException {
         List<Cliente> clientes = new ArrayList<>();
         ResultSet res;
         Connection connection = conexaoDB.getConnection();
         try {
             Statement stmt = connection.createStatement();
-            
+
             String sql = "SELECT c.* " +
-                    "FROM Cliente c";
-            
+                    "       FROM Cliente c";
+
             res = stmt.executeQuery(sql);
-            
+
             while (res.next()) {
                 Cliente cliente = getClienteFromResultSet(res);
                 clientes.add(cliente);
@@ -89,7 +88,7 @@ public class ClienteRepository {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (connection != null) {
+                if (!connection.isClosed()) {
                     connection.close();
                 }
             } catch (SQLException e) {
@@ -97,30 +96,35 @@ public class ClienteRepository {
             }
         }
     }
-    
-    //buscar cliente por id
-    public List<Cliente> buscarIdCliente(Integer id) throws BancoDeDadosException, SQLException {
+
+    public List<Cliente> getById(Integer id) throws SQLException {
         List<Cliente> clientes = new ArrayList<>();
         Connection connection = conexaoDB.getConnection();
+        ResultSet res;
         try {
-            String sql = "SELECT c.*" +
+
+            String sql = "SELECT c.* " +
                     "       FROM CLIENTE c " +
                     "      WHERE c.ID_CLIENTE = ?";
+
             PreparedStatement stmt = connection.prepareStatement(sql);
+
             stmt.setInt(1, id);
-            
-            ResultSet res = stmt.executeQuery();
-            
+
+            res = stmt.executeQuery();
+
             while (res.next()) {
                 Cliente cliente = getClienteFromResultSet(res);
                 clientes.add(cliente);
             }
-            return clientes;
-        } catch (SQLException e ) {
-            throw new BancoDeDadosException("Id nao encontrado repo");
+
+            return cliente;
+
+        } catch (SQLException e) {
+            throw new BancoDeDadosException("Cliente não encontrado");
         } finally {
             try {
-                if (connection != null) {
+                if (!connection.isClosed()) {
                     connection.close();
                 }
             } catch (SQLException e) {
@@ -128,30 +132,30 @@ public class ClienteRepository {
             }
         }
     }
-    
-    //buscar cliente por CPF
-    public List<Cliente> buscarCpfCliente(String cpf) throws BancoDeDadosException, SQLException {
-        List<Cliente> clientes = new ArrayList<>();
+
+    public Cliente getByCpf(String cpf) throws SQLException {
         Connection connection = conexaoDB.getConnection();
         try {
-            String sql = "SELECT c.*" +
+
+            String sql = "SELECT c.* " +
                     "       FROM CLIENTE c " +
                     "      WHERE c.CPF = ?";
+
             PreparedStatement stmt = connection.prepareStatement(sql);
+
             stmt.setString(1, cpf);
-            
+
             ResultSet res = stmt.executeQuery();
-            
-            while (res.next()) {
-                Cliente cliente = getClienteFromResultSet(res);
-                clientes.add(cliente);
-            }
-            return clientes;
-        } catch (SQLException e ) {
-            throw new BancoDeDadosException("CPF nao encontrado repo");
+
+            Cliente cliente = getClienteFromResultSet(res);
+
+            return cliente;
+
+        } catch (SQLException e) {
+            throw new BancoDeDadosException("Cliente não encontrado");
         } finally {
             try {
-                if (connection != null) {
+                if (!connection.isClosed()) {
                     connection.close();
                 }
             } catch (SQLException e) {
@@ -159,10 +163,9 @@ public class ClienteRepository {
             }
         }
     }
-    
-    //EDITAR
-    public Cliente editar(Integer id, Cliente cliente) throws BancoDeDadosException, SQLException {
-      Connection connection = conexaoDB.getConnection();
+
+    public Cliente put(Integer id, Cliente cliente) throws SQLException {
+        Connection connection = conexaoDB.getConnection();
         try {
             StringBuilder sql = new StringBuilder();
             sql.append("UPDATE cliente SET");
@@ -185,9 +188,9 @@ public class ClienteRepository {
             }
             sql.deleteCharAt(sql.length() - 1);
             sql.append(" WHERE id_cliente = ? ");
-            
+
             PreparedStatement stmt = connection.prepareStatement(sql.toString());
-    
+
             int index = 1;
             if (cliente != null) {
                 if (cliente.getIdCliente() != null) {
@@ -207,15 +210,15 @@ public class ClienteRepository {
                 stmt.setString(index++, cliente.getEmail());
             }
             stmt.setInt(index++, id);
-            
+
             stmt.executeUpdate();
-            
+
             return cliente;
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (connection != null) {
+                if (!connection.isClosed()) {
                     connection.close();
                 }
             } catch (SQLException e) {
@@ -223,23 +226,23 @@ public class ClienteRepository {
             }
         }
     }
-    
-    //remover cliente por id
-    public void remover(Integer id) throws BancoDeDadosException, SQLException {
-       Connection connection = conexaoDB.getConnection();
+
+    public void delete(Integer id) throws SQLException {
+        Connection connection = conexaoDB.getConnection();
         try {
-            String sql = "DELETE FROM CLIENTE WHERE ID_CLIENTE = ?";
-            
+            String sql = "DELETE FROM CLIENTE " +
+                    "      WHERE ID_CLIENTE = ?";
+
             PreparedStatement stmt = connection.prepareStatement(sql);
-            
+
             stmt.setInt(1, id);
-            
+
             stmt.executeQuery();
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (connection != null) {
+                if (!connection.isClosed()) {
                     connection.close();
                 }
             } catch (SQLException e) {
@@ -247,9 +250,7 @@ public class ClienteRepository {
             }
         }
     }
-    
-    
-    // pegar dados banco
+
     private Cliente getClienteFromResultSet(ResultSet res) throws SQLException {
         Cliente cliente = new Cliente();
         cliente.setIdCliente(res.getInt("ID_CLIENTE"));

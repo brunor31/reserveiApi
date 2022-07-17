@@ -1,6 +1,6 @@
 package br.com.vemser.reservei.reserveiapi.model.repository;
 
-import br.com.vemser.reservei.reserveiapi.model.dto.HotelDTO;
+import br.com.vemser.reservei.reserveiapi.config.ConexaoDB;
 import br.com.vemser.reservei.reserveiapi.model.entitys.Hotel;
 import br.com.vemser.reservei.reserveiapi.model.entitys.Quarto;
 import br.com.vemser.reservei.reserveiapi.model.entitys.TipoQuarto;
@@ -17,7 +17,7 @@ import java.util.List;
 public class QuartoRepository {
 
     @Autowired
-    private Connection connection;
+    private ConexaoDB conexaoDB;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -38,7 +38,8 @@ public class QuartoRepository {
         }
     }
 
-    public Quarto post(Quarto quarto) throws BancoDeDadosException {
+    public Quarto post(Quarto quarto) throws SQLException {
+        Connection connection = conexaoDB.getConnection();
         try {
 
             Integer proximoId = this.getProximoId(connection);
@@ -71,7 +72,8 @@ public class QuartoRepository {
             }
         }
     }
-    public void delete(Integer id) throws BancoDeDadosException {
+    public void delete(Integer id) throws SQLException {
+        Connection connection = conexaoDB.getConnection();
         try {
 
             String sql = "DELETE FROM QUARTO WHERE ID_QUARTO = ?";
@@ -94,7 +96,8 @@ public class QuartoRepository {
             }
         }
     }
-    public List<Quarto> getAll() throws BancoDeDadosException {
+    public List<Quarto> getAll() throws SQLException {
+        Connection connection = conexaoDB.getConnection();
         List<Quarto> quartos = new ArrayList<>();
         ResultSet res;
         try {

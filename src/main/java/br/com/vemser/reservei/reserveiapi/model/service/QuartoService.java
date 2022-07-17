@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -21,15 +22,15 @@ public class QuartoService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public QuartoDTO post(QuartoCreateDTO quartoCreateDTO) throws BancoDeDadosException {
+    public QuartoDTO post(QuartoCreateDTO quartoCreateDTO) throws SQLException {
         Quarto quarto = objectMapper.convertValue(quartoCreateDTO, Quarto.class);
         quartoRepository.post(quarto);
         return objectMapper.convertValue(quarto, QuartoDTO.class);
     }
-    public void delete(Integer id) throws BancoDeDadosException {
+    public void delete(Integer id) throws SQLException {
         quartoRepository.delete(id);
     }
-    public List<QuartoDTO> getAll() throws BancoDeDadosException {
+    public List<QuartoDTO> getAll() throws SQLException {
         return quartoRepository.getAll().stream()
                 .map(quarto -> objectMapper.convertValue(quarto, QuartoDTO.class))
                 .toList();

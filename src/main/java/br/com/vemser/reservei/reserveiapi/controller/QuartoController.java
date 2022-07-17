@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -23,17 +24,17 @@ public class QuartoController {
     private QuartoService quartoService;
 
     @GetMapping
-    public List<QuartoDTO> getAll() throws BancoDeDadosException {
+    public List<QuartoDTO> getAll() throws SQLException {
         return quartoService.getAll();
     }
 
     @PostMapping
-    public QuartoDTO post(@RequestBody QuartoCreateDTO quartoCreateDTO) throws BancoDeDadosException {
+    public QuartoDTO post(@RequestBody QuartoCreateDTO quartoCreateDTO) throws SQLException {
         return quartoService.post(quartoCreateDTO);
     }
 
     @DeleteMapping("/{idQuarto}")
-    public void delete(@PathVariable("idQuarto") Integer id) throws BancoDeDadosException {
+    public void delete(@PathVariable("idQuarto") Integer id) throws SQLException {
         quartoService.delete(id);
     }
 }
