@@ -33,7 +33,7 @@ public class ClienteRepository {
     }
     
     //criar cliente
-    public Cliente post(Cliente cliente) throws BancoDeDadosException, SQLException {
+    public Cliente post(Cliente cliente) throws SQLException {
         Connection connection = conexaoDB.getConnection();
         try {
             Integer proximoId = this.getProximoId(connection);
@@ -68,7 +68,7 @@ public class ClienteRepository {
     }
     
     //Listar todos os clientes
-    public List<Cliente> listar() throws BancoDeDadosException, SQLException {
+    public List<Cliente> listar() throws SQLException {
         List<Cliente> clientes = new ArrayList<>();
         ResultSet res;
         Connection connection = conexaoDB.getConnection();
@@ -99,7 +99,7 @@ public class ClienteRepository {
     }
     
     //buscar cliente por id
-    public List<Cliente> buscarIdCliente(Integer id) throws BancoDeDadosException, SQLException {
+    public List<Cliente> buscarIdCliente(Integer id) throws SQLException {
         List<Cliente> clientes = new ArrayList<>();
         Connection connection = conexaoDB.getConnection();
         try {
@@ -130,7 +130,7 @@ public class ClienteRepository {
     }
     
     //buscar cliente por CPF
-    public List<Cliente> buscarCpfCliente(String cpf) throws BancoDeDadosException, SQLException {
+    public List<Cliente> buscarCpfCliente(String cpf) throws SQLException {
         List<Cliente> clientes = new ArrayList<>();
         Connection connection = conexaoDB.getConnection();
         try {
@@ -161,7 +161,7 @@ public class ClienteRepository {
     }
     
     //EDITAR
-    public Cliente editar(Integer id, Cliente cliente) throws BancoDeDadosException, SQLException {
+    public Cliente editar(Integer id, Cliente cliente) throws SQLException {
       Connection connection = conexaoDB.getConnection();
         try {
             StringBuilder sql = new StringBuilder();
@@ -225,7 +225,7 @@ public class ClienteRepository {
     }
     
     //remover cliente por id
-    public void remover(Integer id) throws BancoDeDadosException, SQLException {
+    public void remover(Integer id) throws SQLException {
        Connection connection = conexaoDB.getConnection();
         try {
             String sql = "DELETE FROM CLIENTE WHERE ID_CLIENTE = ?";

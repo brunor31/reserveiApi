@@ -22,7 +22,8 @@ public class ConexaoDB {
 
     @Value("${jdbc-schema}")
     private String schema;
-    
+    @Bean
+    @RequestScope
     public Connection getConnection() throws SQLException {
 
         Connection con = DriverManager.getConnection(jdbcString, user, pass);

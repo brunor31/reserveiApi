@@ -3,7 +3,6 @@ package br.com.vemser.reservei.reserveiapi.model.service;
 import br.com.vemser.reservei.reserveiapi.model.dto.ClienteCreateDTO;
 import br.com.vemser.reservei.reserveiapi.model.dto.ClienteDTO;
 import br.com.vemser.reservei.reserveiapi.model.entitys.Cliente;
-import br.com.vemser.reservei.reserveiapi.model.exceptions.BancoDeDadosException;
 import br.com.vemser.reservei.reserveiapi.model.exceptions.RegraDeNegocioException;
 import br.com.vemser.reservei.reserveiapi.model.repository.ClienteRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,40 +21,40 @@ public class ClienteService {
     @Autowired
     private ObjectMapper objectMapper;
     
-    public ClienteDTO post(ClienteCreateDTO clienteCreateDTO) throws BancoDeDadosException, SQLException {
+    public ClienteDTO post(ClienteCreateDTO clienteCreateDTO) throws SQLException {
         Cliente cliente = objectMapper.convertValue(clienteCreateDTO, Cliente.class);
         clienteRepository.post(cliente);
         return objectMapper.convertValue(cliente, ClienteDTO.class);
     }
     
-    public List<ClienteDTO> listar() throws BancoDeDadosException, SQLException {
+    public List<ClienteDTO> listar() throws SQLException {
         return clienteRepository.listar().stream().map(cliente -> objectMapper.convertValue(cliente, ClienteDTO.class))
                 .collect(Collectors.toList());
     }
     
-    public ClienteDTO pegarClienteId(Integer id) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
+    public ClienteDTO pegarClienteId(Integer id) throws RegraDeNegocioException, SQLException {
         Cliente cliente = buscarIdCliente(id);
         return objectMapper.convertValue(cliente, ClienteDTO.class);
     }
     
-    public ClienteDTO pegarClienteCpf(String cpf) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
+    public ClienteDTO pegarClienteCpf(String cpf) throws RegraDeNegocioException, SQLException {
         Cliente cliente = buscarCpfCliente(cpf);
         return objectMapper.convertValue(cliente, ClienteDTO.class);
     }
     
-    public ClienteDTO atualizar(Integer id, ClienteCreateDTO clienteCreateDTO) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
+    public ClienteDTO atualizar(Integer id, ClienteCreateDTO clienteCreateDTO) throws RegraDeNegocioException, SQLException {
         Cliente cliente = objectMapper.convertValue(clienteCreateDTO, Cliente.class);
         buscarIdCliente(id);
         clienteRepository.editar(id, cliente);
         return objectMapper.convertValue(cliente, ClienteDTO.class);
     }
     
-    public void remover(Integer id) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
+    public void remover(Integer id) throws RegraDeNegocioException, SQLException {
         buscarIdCliente(id);
         clienteRepository.remover(id);
     }
     
-    public Cliente buscarIdCliente( Integer id) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
+    public Cliente buscarIdCliente( Integer id) throws RegraDeNegocioException, SQLException {
         Cliente cliente = clienteRepository.buscarIdCliente(id)
                 .stream()
                 .findFirst()
@@ -63,7 +62,7 @@ public class ClienteService {
         return cliente;
     }
     
-    public Cliente buscarCpfCliente(String cpf) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
+    public Cliente buscarCpfCliente(String cpf) throws RegraDeNegocioException, SQLException {
         Cliente cliente = clienteRepository.buscarCpfCliente(cpf)
                 .stream()
                 .filter(cliente1 -> cliente1.getCpf().contains(cpf))

@@ -36,7 +36,7 @@ public class ClienteController {
             }
     )
     @PostMapping
-    public ResponseEntity<ClienteDTO>  post(@RequestBody @Valid ClienteCreateDTO clienteCreateDTO) throws BancoDeDadosException, SQLException {
+    public ResponseEntity<ClienteDTO>  post(@RequestBody @Valid ClienteCreateDTO clienteCreateDTO) throws SQLException {
         return new ResponseEntity(clienteService.post(clienteCreateDTO), HttpStatus.OK);
     }
     
@@ -49,7 +49,7 @@ public class ClienteController {
             }
     )
     @GetMapping
-    public ResponseEntity<ClienteDTO> listar() throws BancoDeDadosException, SQLException {
+    public ResponseEntity<ClienteDTO> listar() throws SQLException {
         return new ResponseEntity(clienteService.listar(), HttpStatus.OK);
     }
     
@@ -63,7 +63,7 @@ public class ClienteController {
             }
     )
     @GetMapping("/{idCliente}")
-    public ResponseEntity<ClienteDTO> pegarClienteId(@PathVariable("idCliente") Integer id) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
+    public ResponseEntity<ClienteDTO> pegarClienteId(@PathVariable("idCliente") Integer id) throws RegraDeNegocioException, SQLException {
         return new ResponseEntity(clienteService.pegarClienteId(id), HttpStatus.OK) ;
     }
     
@@ -77,7 +77,7 @@ public class ClienteController {
             }
     )
     @GetMapping("/cpf")
-    public ResponseEntity<ClienteDTO> pegarClienteCpf(@RequestParam("cpf") String cpf) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
+    public ResponseEntity<ClienteDTO> pegarClienteCpf(@RequestParam("cpf") String cpf) throws RegraDeNegocioException, SQLException {
         return new ResponseEntity(clienteService.pegarClienteCpf(cpf), HttpStatus.OK);
     }
     
@@ -105,7 +105,7 @@ public class ClienteController {
             }
     )
     @DeleteMapping("/{idCliente}")
-    public void remover(@PathVariable("idCliente") Integer id) throws BancoDeDadosException, RegraDeNegocioException, SQLException {
+    public void remover(@PathVariable("idCliente") Integer id) throws RegraDeNegocioException, SQLException {
         clienteService.remover(id);
     }
 }
