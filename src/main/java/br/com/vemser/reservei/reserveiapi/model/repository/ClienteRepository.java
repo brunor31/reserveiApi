@@ -257,7 +257,6 @@ public class ClienteRepository {
         cliente.setCpf(res.getString("CPF"));
         cliente.setTelefone(res.getString("TELEFONE"));
         cliente.setEmail(res.getString("EMAIL"));
-        cliente.setSenha(res.getString("SENHA"));
         return cliente;
     }
 }
