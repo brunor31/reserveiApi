@@ -11,4 +11,5 @@ public class Hotel {
     private String cidade;
     private String telefone;
     private Integer classificacao;
+    private List<Integer> quartos;
 }
