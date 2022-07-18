@@ -29,6 +29,6 @@ public class ReservaCreateDTO {
     @Schema(description = "Informar a data de saída da reserva, deve estar no futuro dd/MM/yyyy", example = "30/08/2022")
     private LocalDate dataSaida;
     @NotNull
-    @Schema(description = "Informar o tipo da reserva, [1 - Comum, 2 - Premium", example = "Reseva Comum")
+    @Schema(description = "Informar o tipo da reserva, [1 - Comum, 2 - Premium", example = "RESERVA_COMUM")
     private TipoReserva tipo;
 }

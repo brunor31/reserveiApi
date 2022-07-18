@@ -20,17 +20,16 @@ public class HotelService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    //TODO: ARRUMAR O TIPO DE RETORNO
     public List<HotelDTO> getAll() throws SQLException {
         return hotelRepository.getAll().stream()
                 .map(hotel -> objectMapper.convertValue(hotel, HotelDTO.class))
                 .toList();
     }
 
-    public HotelDTO adicionar(HotelCreateDTO hotel) throws BancoDeDadosException {
+    public HotelDTO post(HotelCreateDTO hotel) throws BancoDeDadosException {
         try{
             Hotel hotelEntity = objectMapper.convertValue(hotel,Hotel.class);
-            hotelRepository.adicionar(hotelEntity);
+            hotelRepository.post(hotelEntity);
             HotelDTO hotelDTO = objectMapper.convertValue(hotelEntity,HotelDTO.class);
             System.out.println("Hotel adicionado com sucesso!");
             return hotelDTO;
@@ -39,22 +38,15 @@ public class HotelService {
         }
     }
 
-    public HotelDTO editar(Integer id, HotelCreateDTO hotelCreateDTO) throws SQLException {
+    public HotelDTO put(Integer id, HotelCreateDTO hotelCreateDTO) throws SQLException {
+        hotelRepository.getById(id);
         Hotel hotelEntity = objectMapper.convertValue(hotelCreateDTO,Hotel.class);
-        findById(id);
-        hotelRepository.editar(id,hotelEntity);
+        hotelRepository.put(id,hotelEntity);
         return objectMapper.convertValue(hotelEntity,HotelDTO.class);
     }
 
-    public void remover(Integer id) throws BancoDeDadosException,SQLException {
-        findById(id);
-        hotelRepository.remover(id);
-    }
-
-    public Hotel findById(Integer id) throws BancoDeDadosException, SQLException {
-        return hotelRepository.getAll().stream()
-                .filter(x -> x.getIdHotel().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new BancoDeDadosException("Hotel não encontrado"));
+    public void delete(Integer id) throws SQLException {
+        hotelRepository.getById(id);
+        hotelRepository.delete(id);
     }
 }

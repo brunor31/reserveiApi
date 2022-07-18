@@ -19,6 +19,22 @@ public class ReservaRepository {
     @Autowired
     private ObjectMapper objectMapper;
 
+    public Integer getProximoId(Connection connection) throws BancoDeDadosException {
+        try {
+            String sql = "SELECT SEQ_RESERVA.nextval mysequence from DUAL";
+            Statement stmt = connection.createStatement();
+            ResultSet res = stmt.executeQuery(sql);
+
+            if (res.next()) {
+                return res.getInt("mysequence");
+            }
+
+            return null;
+        } catch (SQLException e) {
+            throw new BancoDeDadosException(e.getMessage());
+        }
+    }
+
     public List<Reserva> getAll() throws SQLException {
         List<Reserva> reservas = new ArrayList<>();
         ResultSet res;
@@ -44,7 +60,7 @@ public class ReservaRepository {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (connection != null) {
+                if (!connection.isClosed()) {
                     connection.close();
                 }
             } catch (SQLException e) {
@@ -53,23 +69,42 @@ public class ReservaRepository {
         }
     }
 
-    public Integer getProximoId(Connection connection) throws BancoDeDadosException {
+    public Reserva getById(Integer id) throws SQLException {
+        Reserva reserva = null;
+        Connection connection = conexaoDB.getConnection();
+        ResultSet res;
         try {
-            String sql = "SELECT SEQ_RESERVA.nextval mysequence from DUAL";
-            Statement stmt = connection.createStatement();
-            ResultSet res = stmt.executeQuery(sql);
 
+            String sql = "SELECT * " +
+                    "       FROM RESERVA r" +
+                    "      WHERE r.ID_RESERVA = ?";
+
+            PreparedStatement stmt = connection.prepareStatement(sql);
+
+            stmt.setInt(1, id);
+
+            res = stmt.executeQuery();
             if (res.next()) {
-                return res.getInt("mysequence");
+                reserva = getReservaFromResultSet(res);
             }
 
-            return null;
+            return reserva;
+
         } catch (SQLException e) {
-            throw new BancoDeDadosException(e.getMessage());
+            throw new BancoDeDadosException("Reserva não encontrada");
+        } finally {
+            try {
+                if (!connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public Reserva post(Reserva reserva) throws BancoDeDadosException, SQLException {
+
+    public Reserva post(Reserva reserva) throws SQLException {
         Connection connection = conexaoDB.getConnection();
         try {
             Integer proximoId = this.getProximoId(connection);
@@ -97,7 +132,7 @@ public class ReservaRepository {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (connection != null) {
+                if (!connection.isClosed()) {
                     connection.close();
                 }
             } catch (SQLException e) {
@@ -106,60 +141,78 @@ public class ReservaRepository {
         }
     }
 
-    public Hotel editar(Integer id, Hotel hotel) throws SQLException {
+    public Reserva put(Integer id, Reserva reserva) throws SQLException {
         Connection connection = conexaoDB.getConnection();
         try {
             StringBuilder sql = new StringBuilder();
-            sql.append("UPDATE HOTEL SET");
-            hotel.toString();
-            if (hotel != null) {
-                if (hotel.getIdHotel() != null) sql.append(" id_hotel = ?,");
+            sql.append("UPDATE RESERVA SET");
+            reserva.toString();
+            if (reserva != null) {
+                if (reserva.getIdReserva() != null) sql.append(" id_reserva = ?,");
             }
-            if (hotel.getNome() != null) {
-                sql.append(" nome = ?,");
+            if (reserva.getIdHotel() != null) {
+                sql.append(" id_hotel = ?,");
             }
-            if (hotel.getCidade() != null) {
-                sql.append(" cidade = ?,");
+            if (reserva.getIdQuarto() != null) {
+                sql.append(" id_quarto = ?,");
             }
-            if (hotel.getTelefone() != null) {
-                sql.append(" telefone = ?,");
+            if (reserva.getIdCliente() != null) {
+                sql.append(" id_cliente = ?,");
             }
-            if (hotel.getClassificacao() != null) {
-                sql.append(" classificacao = ?,");
+            if (reserva.getDataEntrada() != null) {
+                sql.append(" data_entrada = ?,");
+            }
+            if (reserva.getDataSaida() != null) {
+                sql.append(" data_saida = ?,");
+            }
+            if (reserva.getTipo() != null) {
+                sql.append(" tipo = ?,");
+            }
+            if (reserva.getValorReserva() != null){
+                sql.append(" valor_reserva = ? ");
             }
             sql.deleteCharAt(sql.length() - 1);
-            sql.append(" WHERE id_hotel = ? ");
+            sql.append(" WHERE id_reserva = ? ");
 
             PreparedStatement stmt = connection.prepareStatement(sql.toString());
 
             int index = 1;
-            if (hotel != null) {
-                if (hotel.getIdHotel() != null) {
-                    stmt.setInt(index++, hotel.getIdHotel());
+            if (reserva != null) {
+                if (reserva.getIdReserva() != null) {
+                    stmt.setInt(index++, reserva.getIdReserva());
                 }
             }
-            if (hotel.getNome() != null) {
-                stmt.setString(index++, hotel.getNome());
+            if (reserva.getIdHotel() != null) {
+                stmt.setInt(index++, reserva.getIdHotel());
             }
-            if (hotel.getCidade() != null) {
-                stmt.setString(index++, hotel.getCidade());
+            if (reserva.getIdQuarto() != null) {
+                stmt.setInt(index++, reserva.getIdQuarto());
             }
-            if (hotel.getTelefone() != null) {
-                stmt.setString(index++, hotel.getTelefone());
+            if (reserva.getIdCliente() != null) {
+                stmt.setInt(index++, reserva.getIdCliente());
             }
-            if (hotel.getClassificacao() != null) {
-                stmt.setInt(index++, hotel.getClassificacao());
+            if (reserva.getDataEntrada() != null) {
+                stmt.setDate(index++, Date.valueOf(reserva.getDataEntrada()));
+            }
+            if (reserva.getDataEntrada() != null) {
+                stmt.setDate(index++, Date.valueOf(reserva.getDataSaida()));
+            }
+            if (reserva.getTipo() != null) {
+                stmt.setInt(index++, reserva.getTipo().getTipo());
+            }
+            if (reserva.getValorReserva() != null) {
+                stmt.setDouble(index++, reserva.getValorReserva());
             }
             stmt.setInt(index++, id);
 
             stmt.executeUpdate();
 
-            return hotel;
+            return reserva;
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (connection != null) {
+                if (!connection.isClosed()) {
                     connection.close();
                 }
             } catch (SQLException e) {
@@ -168,11 +221,12 @@ public class ReservaRepository {
         }
     }
 
-    public void remover(Integer id) throws BancoDeDadosException, SQLException {
+    public void delete(Integer id) throws SQLException {
         Connection connection = conexaoDB.getConnection();
         try {
-            String sql = "DELETE FROM HOTEL" +
-                    "      WHERE ID_HOTEL = ?";
+
+            String sql = "DELETE FROM RESERVA " +
+                    "      WHERE ID_RESERVA = ?";
 
             PreparedStatement stmt = connection.prepareStatement(sql);
 
@@ -184,7 +238,7 @@ public class ReservaRepository {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (connection != null) {
+                if (!connection.isClosed()) {
                     connection.close();
                 }
             } catch (SQLException e) {

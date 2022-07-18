@@ -21,5 +21,4 @@ public class QuartoCreateDTO {
     @NotNull
     @Schema(description = "Valor da diária do quarto", example = "250.00")
     private Double precoDiaria;
-
 }

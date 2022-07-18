@@ -8,6 +8,6 @@ public class Quarto {
     private Integer idQuarto;
     private Integer idHotel;
     private Integer numero;
-    private TipoQuarto tipo;
+    private TipoQuarto tipoQuarto;
     private Double precoDiaria;
 }

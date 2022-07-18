@@ -47,7 +47,7 @@ public class QuartoRepository {
             stmt.setInt(1, quarto.getIdQuarto());
             stmt.setInt(2, quarto.getIdHotel());
             stmt.setInt(3, quarto.getNumero());
-            stmt.setInt(4, quarto.getTipo().getTipo());
+            stmt.setInt(4, quarto.getTipoQuarto().getTipo());
             stmt.setDouble(5, quarto.getPrecoDiaria());
 
             stmt.executeUpdate();
@@ -66,6 +66,69 @@ public class QuartoRepository {
         }
     }
 
+    public Quarto put(Integer id, Quarto quarto) throws SQLException {
+        Connection connection = conexaoDB.getConnection();
+        try {
+            StringBuilder sql = new StringBuilder();
+            sql.append("UPDATE QUARTO SET");
+            quarto.toString();
+            if (quarto != null) {
+                if (quarto.getIdQuarto() != null) sql.append(" id_quarto = ?,");
+            }
+            if (quarto.getIdHotel() != null) {
+                sql.append(" id_hotel = ?,");
+            }
+            if (quarto.getNumero() != null) {
+                sql.append(" numero = ?,");
+            }
+            if (quarto.getTipoQuarto() != null) {
+                sql.append(" tipo = ?,");
+            }
+            if (quarto.getPrecoDiaria() != null) {
+                sql.append(" preco_diaria = ?,");
+            }
+            sql.deleteCharAt(sql.length() - 1);
+            sql.append(" WHERE id_quarto = ? ");
+
+            PreparedStatement stmt = connection.prepareStatement(sql.toString());
+
+            int index = 1;
+            if (quarto != null) {
+                if (quarto.getIdQuarto() != null) {
+                    stmt.setInt(index++, quarto.getIdQuarto());
+                }
+            }
+            if (quarto.getIdHotel() != null) {
+                stmt.setInt(index++, quarto.getIdHotel());
+            }
+            if (quarto.getNumero() != null) {
+                stmt.setInt(index++, quarto.getNumero());
+            }
+            if (quarto.getTipoQuarto() != null) {
+                stmt.setInt(index++, quarto.getTipoQuarto().getTipo());
+            }
+            if (quarto.getPrecoDiaria() != null) {
+                stmt.setDouble(index++, quarto.getPrecoDiaria());
+            }
+            stmt.setInt(index++, id);
+
+            stmt.executeUpdate();
+
+            return quarto;
+        } catch (SQLException e) {
+            throw new BancoDeDadosException(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     public void delete(Integer id) throws SQLException {
         Connection connection = conexaoDB.getConnection();
         try {
@@ -77,7 +140,7 @@ public class QuartoRepository {
 
             stmt.setInt(1, id);
 
-            stmt.executeUpdate();
+            stmt.executeQuery();
 
         } catch (SQLException e) {
             throw new BancoDeDadosException(e.getMessage());
@@ -162,7 +225,7 @@ public class QuartoRepository {
         quarto.setIdQuarto(res.getInt("ID_QUARTO"));
         quarto.setIdHotel(res.getInt("ID_HOTEL"));
         quarto.setNumero(res.getInt("NUMERO"));
-        quarto.setTipo(TipoQuarto.ofType(res.getInt("TIPO")));
+        quarto.setTipoQuarto(TipoQuarto.ofTipo(res.getInt("TIPO")));
         quarto.setPrecoDiaria(res.getDouble("PRECO_DIARIA"));
         return quarto;
     }

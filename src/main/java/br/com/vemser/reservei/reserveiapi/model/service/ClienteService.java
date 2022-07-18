@@ -4,7 +4,6 @@ import br.com.vemser.reservei.reserveiapi.model.dto.ClienteCreateDTO;
 import br.com.vemser.reservei.reserveiapi.model.dto.ClienteDTO;
 import br.com.vemser.reservei.reserveiapi.model.entitys.Cliente;
 import br.com.vemser.reservei.reserveiapi.model.exceptions.BancoDeDadosException;
-import br.com.vemser.reservei.reserveiapi.model.exceptions.RegraDeNegocioException;
 import br.com.vemser.reservei.reserveiapi.model.repository.ClienteRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,20 +11,23 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
-    
     @Autowired
     private ObjectMapper objectMapper;
     
     public ClienteDTO post(ClienteCreateDTO clienteCreateDTO) throws SQLException {
-        Cliente cliente = objectMapper.convertValue(clienteCreateDTO, Cliente.class);
-        clienteRepository.post(cliente);
-        return objectMapper.convertValue(cliente, ClienteDTO.class);
+        Cliente cliente = clienteRepository.getByCpf(clienteCreateDTO.getCpf());
+        if (cliente != null){
+        throw new BancoDeDadosException("Cliente já possui cadastro");
+        } else {
+            cliente = objectMapper.convertValue(clienteCreateDTO, Cliente.class);
+            clienteRepository.post(cliente);
+            return objectMapper.convertValue(cliente, ClienteDTO.class);
+        }
     }
     
     public List<ClienteDTO> getAll() throws SQLException {

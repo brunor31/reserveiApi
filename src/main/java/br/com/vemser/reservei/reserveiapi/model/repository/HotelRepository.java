@@ -1,7 +1,6 @@
 package br.com.vemser.reservei.reserveiapi.model.repository;
 
 import br.com.vemser.reservei.reserveiapi.config.ConexaoDB;
-import br.com.vemser.reservei.reserveiapi.model.entitys.Cliente;
 import br.com.vemser.reservei.reserveiapi.model.entitys.Hotel;
 import br.com.vemser.reservei.reserveiapi.model.entitys.Quarto;
 import br.com.vemser.reservei.reserveiapi.model.exceptions.BancoDeDadosException;
@@ -67,7 +66,7 @@ public class HotelRepository {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (connection != null) {
+                if (!connection.isClosed()) {
                     connection.close();
                 }
             } catch (SQLException e) {
@@ -92,7 +91,7 @@ public class HotelRepository {
         }
     }
 
-    public Hotel adicionar(Hotel hotel) throws BancoDeDadosException, SQLException {
+    public Hotel post(Hotel hotel) throws BancoDeDadosException, SQLException {
         Connection connection = conexaoDB.getConnection();
         try {
             Integer proximoId = this.getProximoId(connection);
@@ -117,7 +116,7 @@ public class HotelRepository {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (connection != null) {
+                if (!connection.isClosed()) {
                     connection.close();
                 }
             } catch (SQLException e) {
@@ -126,7 +125,7 @@ public class HotelRepository {
         }
     }
 
-    public Hotel editar(Integer id, Hotel hotel) throws SQLException {
+    public Hotel put(Integer id, Hotel hotel) throws SQLException {
         Connection connection = conexaoDB.getConnection();
         try {
             StringBuilder sql = new StringBuilder();
@@ -179,7 +178,7 @@ public class HotelRepository {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (connection != null) {
+                if (!connection.isClosed()) {
                     connection.close();
                 }
             } catch (SQLException e) {
@@ -188,7 +187,7 @@ public class HotelRepository {
         }
     }
 
-    public void remover(Integer id) throws BancoDeDadosException, SQLException {
+    public void delete(Integer id) throws  SQLException {
         Connection connection = conexaoDB.getConnection();
         try {
             String sql = "DELETE FROM HOTEL" +
@@ -204,7 +203,7 @@ public class HotelRepository {
             throw new BancoDeDadosException(e.getMessage());
         } finally {
             try {
-                if (connection != null) {
+                if (!connection.isClosed()) {
                     connection.close();
                 }
             } catch (SQLException e) {
@@ -212,6 +211,41 @@ public class HotelRepository {
             }
         }
     }
+
+    public Hotel getById(Integer id) throws SQLException {
+        Hotel hotel = null;
+        Connection connection = conexaoDB.getConnection();
+        ResultSet res;
+        try {
+
+            String sql = "SELECT * " +
+                    "       FROM HOTEL h" +
+                    "      WHERE h.ID_HOTEL = ?";
+
+            PreparedStatement stmt = connection.prepareStatement(sql);
+
+            stmt.setInt(1, id);
+
+            res = stmt.executeQuery();
+            if (res.next()) {
+                hotel = getHotelFromResultSet(res);
+            }
+
+            return hotel;
+
+        } catch (SQLException e) {
+            throw new BancoDeDadosException("Hotel não encontrado");
+        } finally {
+            try {
+                if (!connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     private Hotel getHotelFromResultSet(ResultSet res) throws SQLException {
         Hotel hotel = new Hotel();

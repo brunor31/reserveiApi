@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public enum TipoQuarto {
 
-    QUARTO_SOLTEIRO(0), QUARTO_CASAL(1);
+    QUARTO_SOLTEIRO(1), QUARTO_CASAL(2);
     private Integer tipo;
 
     TipoQuarto(Integer tipo) {
@@ -15,14 +15,7 @@ public enum TipoQuarto {
         return tipo;
     }
 
-    public static TipoQuarto ofType(Integer tipo) {
+    public static TipoQuarto ofTipo(Integer tipo) {
         return Arrays.stream(TipoQuarto.values()).filter(tp -> tp.getTipo().equals(tipo)).findFirst().get();
     }
-
-    public String tipoString() {
-        if (tipo == 1) {
-            return "Quarto Solteiro";
-        } else return "Quarto Casal";
-    }
 }
-

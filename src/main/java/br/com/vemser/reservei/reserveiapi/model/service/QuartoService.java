@@ -2,7 +2,6 @@ package br.com.vemser.reservei.reserveiapi.model.service;
 
 import br.com.vemser.reservei.reserveiapi.model.dto.QuartoCreateDTO;
 import br.com.vemser.reservei.reserveiapi.model.dto.QuartoDTO;
-import br.com.vemser.reservei.reserveiapi.model.entitys.Hotel;
 import br.com.vemser.reservei.reserveiapi.model.entitys.Quarto;
 import br.com.vemser.reservei.reserveiapi.model.repository.HotelRepository;
 import br.com.vemser.reservei.reserveiapi.model.repository.QuartoRepository;
@@ -24,17 +23,25 @@ public class QuartoService {
     @Autowired
     private ObjectMapper objectMapper;
 
+    public List<QuartoDTO> getAll() throws SQLException {
+        return quartoRepository.getAll().stream()
+                .map(quarto -> objectMapper.convertValue(quarto, QuartoDTO.class))
+                .toList();
+    }
     public QuartoDTO post(QuartoCreateDTO quartoCreateDTO) throws SQLException {
         Quarto quarto = objectMapper.convertValue(quartoCreateDTO, Quarto.class);
         quartoRepository.post(quarto);
         return objectMapper.convertValue(quarto, QuartoDTO.class);
     }
-    public void delete(Integer id) throws SQLException {
-        quartoRepository.delete(id);
+    public QuartoDTO put(Integer id, QuartoCreateDTO quartoCreateDTO) throws SQLException {
+        quartoRepository.getById(id);
+        Quarto quartoEntity = objectMapper.convertValue(quartoCreateDTO, Quarto.class);
+        quartoRepository.put(id, quartoEntity);
+        return objectMapper.convertValue(quartoEntity, QuartoDTO.class);
     }
-    public List<QuartoDTO> getAll() throws SQLException {
-        return quartoRepository.getAll().stream()
-                .map(quarto -> objectMapper.convertValue(quarto, QuartoDTO.class))
-                .toList();
+
+    public void delete(Integer id) throws SQLException {
+        quartoRepository.getById(id);
+        quartoRepository.delete(id);
     }
 }
