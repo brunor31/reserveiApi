@@ -2,6 +2,7 @@ package br.com.vemser.reservei.reserveiapi.controller;
 
 import br.com.vemser.reservei.reserveiapi.model.dto.ClienteCreateDTO;
 import br.com.vemser.reservei.reserveiapi.model.dto.ClienteDTO;
+import br.com.vemser.reservei.reserveiapi.model.exceptions.RegraDeNegocioException;
 import br.com.vemser.reservei.reserveiapi.model.service.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,7 +35,7 @@ public class ClienteController {
     @Operation(summary = "Criar um cliente", description = "Cria um cliente e adiciona no banco")
     @ApiResponse(responseCode = "200", description = "Cria um cliente e adiciona no banco")
     @PostMapping
-    public ResponseEntity<ClienteDTO> post(@RequestBody @Valid ClienteCreateDTO clienteCreateDTO) throws SQLException {
+    public ResponseEntity<ClienteDTO> post(@RequestBody @Valid ClienteCreateDTO clienteCreateDTO) throws SQLException, RegraDeNegocioException {
         return new ResponseEntity(clienteService.post(clienteCreateDTO), HttpStatus.OK);
     }
     @Operation(summary = "Lista todos os cliente", description = "Retorna uma lista com todos os clientes")

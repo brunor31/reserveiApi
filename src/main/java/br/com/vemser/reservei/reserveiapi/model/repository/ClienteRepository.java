@@ -3,6 +3,7 @@ package br.com.vemser.reservei.reserveiapi.model.repository;
 import br.com.vemser.reservei.reserveiapi.config.ConexaoDB;
 import br.com.vemser.reservei.reserveiapi.model.entitys.Cliente;
 import br.com.vemser.reservei.reserveiapi.model.exceptions.BancoDeDadosException;
+import br.com.vemser.reservei.reserveiapi.model.exceptions.RegraDeNegocioException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -33,7 +34,7 @@ public class ClienteRepository {
     }
 
     //criar cliente
-    public Cliente post(Cliente cliente) throws BancoDeDadosException, SQLException {
+    public Cliente post(Cliente cliente) throws SQLException, RegraDeNegocioException {
         Connection connection = conexaoDB.getConnection();
         try {
             Integer proximoId = this.getProximoId(connection);
@@ -55,7 +56,7 @@ public class ClienteRepository {
             stmt.executeUpdate();
             return cliente;
         } catch (SQLException e) {
-            throw new BancoDeDadosException(e.getMessage());
+            throw new RegraDeNegocioException(e.getMessage());
         } finally {
             try {
                 if (connection != null) {
