@@ -45,9 +45,9 @@ public class EmailService {
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 //            ClassPathResource image = new ClassPathResource("src/main/resources/templates/images/img1.png");
-            FileSystemResource image1 = new FileSystemResource(new File("C:\\Users\\bruno\\Desktop\\reservei-api\\src\\main\\resources\\templates\\img1.png"));
-            FileSystemResource image2 = new FileSystemResource(new File("C:\\Users\\bruno\\Desktop\\reservei-api\\src\\main\\resources\\templates\\img2.png"));
-            FileSystemResource image3 = new FileSystemResource(new File("C:\\Users\\bruno\\Desktop\\reservei-api\\src\\main\\resources\\templates\\Reservei.png"));
+            FileSystemResource image1 = new FileSystemResource(new File("reservei-api\\src\\main\\resources\\templates\\img1.png"));
+            FileSystemResource image2 = new FileSystemResource(new File("reservei-api\\src\\main\\resources\\templates\\img2.png"));
+            FileSystemResource image3 = new FileSystemResource(new File("reservei-api\\src\\main\\resources\\templates\\Reservei.png"));
 
             mimeMessageHelper.setFrom(from);
             mimeMessageHelper.setTo(clienteDTO.getEmail());
