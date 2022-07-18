@@ -23,7 +23,7 @@ public class ClienteService {
     public ClienteDTO post(ClienteCreateDTO clienteCreateDTO) throws SQLException, RegraDeNegocioException {
         Cliente cliente = clienteRepository.getByCpf(clienteCreateDTO.getCpf());
         if (cliente != null){
-        throw new BancoDeDadosException("Cliente já possui cadastro");
+        throw new RegraDeNegocioException("Cliente já possui cadastro");
         } else {
             cliente = objectMapper.convertValue(clienteCreateDTO, Cliente.class);
             clienteRepository.post(cliente);
