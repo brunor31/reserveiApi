@@ -36,7 +36,7 @@ public class QuartoRepository {
         Connection connection = conexaoDB.getConnection();
         try {
             Integer proximoId = this.getProximoId(connection);
-            quarto.setIdHotel(proximoId);
+            quarto.setIdQuarto(proximoId);
 
             String sql = "INSERT INTO QUARTO\n " +
                     "(ID_QUARTO, ID_HOTEL, NUMERO, TIPO, PRECO_DIARIA)\n" +
